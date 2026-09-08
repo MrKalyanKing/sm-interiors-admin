@@ -1,0 +1,103 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  * {
+    @apply border-white/10;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-night font-sans text-frost antialiased;
+    /* Two soft azure orbs bleeding through the whole app, the same treatment
+       the website uses behind its glass panels. */
+    background-image:
+      radial-gradient(60rem 40rem at 12% -10%, rgba(41, 171, 226, 0.14), transparent 60%),
+      radial-gradient(50rem 36rem at 92% 8%, rgba(14, 127, 184, 0.12), transparent 62%);
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    @apply bg-azure/30 text-white;
+  }
+
+  /* A scrollbar that does not punch a bright hole in a dark panel. */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-white/10;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-white/20;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-azure/70 ring-offset-2 ring-offset-night;
+  }
+
+  /* Chrome paints a white block over autofilled inputs. This keeps them dark. */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  select:-webkit-autofill {
+    -webkit-text-fill-color: #eaf4fb;
+    -webkit-box-shadow: 0 0 0 1000px #0c1b2c inset;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+}
+
+@layer components {
+  /* The frosted panel that most of this UI is built out of. */
+  .glass {
+    @apply border border-white/10 bg-white/[0.045] shadow-glass backdrop-blur-xl;
+  }
+
+  .glass-raised {
+    @apply border border-white/10 bg-night-raised/80 shadow-glass-lg backdrop-blur-2xl;
+  }
+
+  .kicker {
+    @apply text-[0.65rem] font-semibold uppercase tracking-kicker text-frost-dim;
+  }
+
+  .azure-text {
+    @apply bg-gradient-to-r from-azure-light to-azure bg-clip-text text-transparent;
+  }
+
+  /* Loading placeholder with a sweep, rather than a bare grey box. */
+  .skeleton {
+    @apply relative overflow-hidden rounded-lg bg-white/[0.06];
+  }
+  .skeleton::after {
+    @apply absolute inset-0 animate-shimmer bg-gradient-to-r from-transparent via-white/10 to-transparent;
+    content: '';
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
