@@ -9,6 +9,7 @@ import {
   Tags,
   TrendingUp,
 } from 'lucide-react';
+import { useState } from 'react';
 import { renderLucideIcon } from '@/components/ui/IconPicker';
 import { mediaThumb } from '@/features/media/useMedia';
 import { truncate } from '@/lib/format';
@@ -248,6 +249,25 @@ export const statsConfig: ResourceConfig<Stat> = {
   ],
 };
 
+function BeforeAfterThumbnail({ src }: { src: string }) {
+  const [error, setError] = useState(false);
+  if (!src || error) {
+    return (
+      <span className="grid h-10 w-10 place-items-center rounded-lg bg-white/5 text-frost-dim ring-1 ring-white/10">
+        <ImageIcon className="h-4 w-4" />
+      </span>
+    );
+  }
+  return (
+    <img
+      src={src}
+      alt=""
+      onError={() => setError(true)}
+      className="h-10 w-10 rounded-lg object-cover ring-1 ring-white/10"
+    />
+  );
+}
+
 export const beforeAfterConfig: ResourceConfig<BeforeAfterPair> = {
   path: 'before-after',
   title: 'Before / after',
@@ -257,13 +277,7 @@ export const beforeAfterConfig: ResourceConfig<BeforeAfterPair> = {
     'The drag-to-compare slider. Both photos should be the same room from the same spot, or the effect falls apart.',
   thumbnail: (row) => {
     const src = row.afterImage ? mediaThumb(row.afterImage) : (row.afterImageUrl ?? '');
-    return src ? (
-      <img src={src} alt="" className="h-10 w-10 rounded-lg object-cover ring-1 ring-white/10" />
-    ) : (
-      <span className="grid h-10 w-10 place-items-center rounded-lg bg-white/5 text-frost-dim">
-        <ImageIcon className="h-4 w-4" />
-      </span>
-    );
+    return <BeforeAfterThumbnail src={src} />;
   },
   primary: (row) => row.title,
   secondary: (row) => truncate(row.caption, 110),

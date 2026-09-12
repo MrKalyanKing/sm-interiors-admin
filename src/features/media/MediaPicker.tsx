@@ -1,5 +1,5 @@
 import { Check, ImageOff, Search, Upload, X } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Field';
@@ -45,6 +45,11 @@ export function MediaPicker({
   const selected = inList ?? fetched ?? null;
 
   const previewUrl = selected ? mediaThumb(selected) : (fallbackUrl ?? '');
+  const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [previewUrl]);
 
   const handleUpload = async (file: File) => {
     setUploading(true);
@@ -64,8 +69,13 @@ export function MediaPicker({
 
       <div className="flex items-start gap-3">
         <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-night-raised">
-          {previewUrl ? (
-            <img src={previewUrl} alt="" className="h-full w-full object-cover" />
+          {previewUrl && !imgError ? (
+            <img
+              src={previewUrl}
+              alt=""
+              onError={() => setImgError(true)}
+              className="h-full w-full object-cover"
+            />
           ) : (
             <div className="grid h-full place-items-center text-frost-dim">
               <ImageOff className="h-5 w-5" />

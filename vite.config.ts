@@ -10,6 +10,12 @@ export default defineConfig({
   server: {
     port: 5174,
     strictPort: true,
+    proxy: {
+      '/images': {
+        target: 'http://localhost:5173',
+        changeOrigin: true,
+      },
+    },
   },
   preview: { port: 5174 },
   build: {

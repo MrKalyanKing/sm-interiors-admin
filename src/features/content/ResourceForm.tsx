@@ -39,6 +39,7 @@ export function ResourceForm({
           <FieldRenderer
             field={field}
             value={values[field.name]}
+            allValues={values}
             error={errors[field.name]}
             onChange={(value) => onChange(field.name, value)}
             mediaFolder={mediaFolder}
@@ -52,12 +53,13 @@ export function ResourceForm({
 interface FieldRendererProps {
   field: FieldConfig;
   value: unknown;
+  allValues?: FormValues;
   error?: string;
   onChange: (value: unknown) => void;
   mediaFolder?: string;
 }
 
-function FieldRenderer({ field, value, error, onChange, mediaFolder }: FieldRendererProps) {
+function FieldRenderer({ field, value, allValues, error, onChange, mediaFolder }: FieldRendererProps) {
   const asyncOptions = useAsyncOptions(field.optionsKey);
   const options = field.optionsKey ? asyncOptions : (field.options ?? []);
 
@@ -134,16 +136,23 @@ function FieldRenderer({ field, value, error, onChange, mediaFolder }: FieldRend
         />
       );
 
-    case 'image':
+    case 'image': {
+      const fallbackUrl = allValues
+        ? ((allValues[`${field.name.replace(/Id$/, '')}Url`] as string) ||
+           (allValues.imageUrl as string) ||
+           undefined)
+        : undefined;
       return (
         <MediaPicker
           label={field.label}
           hint={field.hint}
           folder={mediaFolder}
           value={(value as string) ?? null}
+          fallbackUrl={fallbackUrl}
           onChange={(assetId) => onChange(assetId ?? undefined)}
         />
       );
+    }
 
     case 'toggle':
       return (

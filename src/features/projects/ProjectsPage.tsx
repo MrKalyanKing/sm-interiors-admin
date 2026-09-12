@@ -1,9 +1,39 @@
 import { ImageOff, SquareStack, Star } from 'lucide-react';
+import { useState } from 'react';
 import { ResourcePage } from '@/features/content/ResourcePage';
 import type { ResourceConfig } from '@/features/content/types';
 import { mediaThumb } from '@/features/media/useMedia';
 import { truncate } from '@/lib/format';
 import type { Project } from '@/types';
+
+function ProjectThumbnail({ src, isFeatured }: { src: string; isFeatured?: boolean }) {
+  const [error, setError] = useState(false);
+
+  if (!src || error) {
+    return (
+      <span className="grid h-12 w-12 place-items-center rounded-lg bg-white/5 text-frost-dim ring-1 ring-white/10">
+        <ImageOff className="h-4 w-4" />
+      </span>
+    );
+  }
+
+  return (
+    <div className="relative">
+      <img
+        src={src}
+        alt=""
+        loading="lazy"
+        onError={() => setError(true)}
+        className="h-12 w-12 rounded-lg object-cover ring-1 ring-white/10"
+      />
+      {isFeatured && (
+        <span className="absolute -right-1 -top-1 grid h-4 w-4 place-items-center rounded-full bg-warning text-night">
+          <Star className="h-2.5 w-2.5 fill-current" />
+        </span>
+      )}
+    </div>
+  );
+}
 
 const config: ResourceConfig<Project> = {
   path: 'projects',
@@ -16,25 +46,7 @@ const config: ResourceConfig<Project> = {
     'Add a handover photo, a short write-up and the category it belongs to. Portrait photos (4:5) crop best.',
   thumbnail: (row) => {
     const src = row.image ? mediaThumb(row.image) : (row.imageUrl ?? '');
-    return src ? (
-      <div className="relative">
-        <img
-          src={src}
-          alt=""
-          loading="lazy"
-          className="h-12 w-12 rounded-lg object-cover ring-1 ring-white/10"
-        />
-        {row.isFeatured && (
-          <span className="absolute -right-1 -top-1 grid h-4 w-4 place-items-center rounded-full bg-warning text-night">
-            <Star className="h-2.5 w-2.5 fill-current" />
-          </span>
-        )}
-      </div>
-    ) : (
-      <span className="grid h-12 w-12 place-items-center rounded-lg bg-white/5 text-frost-dim">
-        <ImageOff className="h-4 w-4" />
-      </span>
-    );
+    return <ProjectThumbnail src={src} isFeatured={row.isFeatured} />;
   },
   primary: (row) => row.title,
   secondary: (row) =>
