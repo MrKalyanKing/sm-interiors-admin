@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { api, getErrorMessage } from '@/lib/api';
+import { api, getErrorMessage, BACKEND_ORIGIN } from '@/lib/api';
 import type { MediaAsset, Paginated } from '@/types';
 
 export interface MediaQuery {
@@ -103,16 +103,17 @@ export function useMediaMutations() {
 export function mediaUrl(asset: Pick<MediaAsset, 'url' | 'path'> | null | undefined): string {
   if (!asset) return '';
   if (asset.url) return asset.url;
-  const base = (import.meta.env.VITE_API_URL ?? '').replace(/\/api\/?$/, '');
-  return `${base}${asset.path}`;
+  if (!asset.path) return '';
+  const path = asset.path.startsWith('/') ? asset.path : `/${asset.path}`;
+  return `${BACKEND_ORIGIN}${path}`;
 }
 
 export function mediaThumb(asset: MediaAsset | null | undefined): string {
   if (!asset) return '';
   if (asset.thumbnailUrl) return asset.thumbnailUrl;
   if (asset.thumbnailPath) {
-    const base = (import.meta.env.VITE_API_URL ?? '').replace(/\/api\/?$/, '');
-    return `${base}${asset.thumbnailPath}`;
+    const path = asset.thumbnailPath.startsWith('/') ? asset.thumbnailPath : `/${asset.thumbnailPath}`;
+    return `${BACKEND_ORIGIN}${path}`;
   }
   return mediaUrl(asset);
 }

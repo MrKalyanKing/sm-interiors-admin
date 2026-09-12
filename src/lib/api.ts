@@ -1,6 +1,17 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 
-export const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:4000/api';
+function normalizeApiUrl(raw?: string): string {
+  if (!raw) return 'http://localhost:4000/api';
+  const trimmed = raw.trim().replace(/\/+$/, '');
+  if (!trimmed) return 'http://localhost:4000/api';
+  return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+}
+
+const RAW_API_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL;
+export const API_URL = normalizeApiUrl(RAW_API_URL);
+
+/** Base origin of the backend without the /api prefix, for media and static assets. */
+export const BACKEND_ORIGIN = API_URL.replace(/\/api\/?$/, '');
 
 const ACCESS_KEY = 'sm_access_token';
 const REFRESH_KEY = 'sm_refresh_token';

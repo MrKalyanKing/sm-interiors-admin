@@ -22,13 +22,14 @@ export function ReviewShareModal({ open, onClose }: ReviewShareModalProps) {
   const [copiedGeneral, setCopiedGeneral] = useState(false);
   const [copiedPersonal, setCopiedPersonal] = useState(false);
 
-  // Compute public website base URL (local dev switches 5174 -> 5173)
+  // Compute public website base URL (reads VITE_SITE_URL with origin fallback)
   const publicBaseUrl =
-    typeof window !== 'undefined'
+    import.meta.env.VITE_SITE_URL ||
+    (typeof window !== 'undefined'
       ? window.location.origin.includes(':5174')
         ? window.location.origin.replace(':5174', ':5173')
-        : window.location.origin
-      : 'https://sminteriors.in';
+        : window.location.origin.replace('admin.', '')
+      : 'https://sminteriors.in');
 
   const generalReviewUrl = `${publicBaseUrl}/review`;
 
