@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { api, getErrorMessage, BACKEND_ORIGIN } from '@/lib/api';
+import { api, getErrorMessage, BACKEND_ORIGIN, SITE_URL } from '@/lib/api';
 import type { MediaAsset, Paginated } from '@/types';
 
 export interface MediaQuery {
@@ -109,6 +109,9 @@ export function mediaUrl(asset: Pick<MediaAsset, 'url' | 'path'> | null | undefi
     const filename = path.replace('/uploads/', '');
     return `${BACKEND_ORIGIN}/api/media/file/${filename}`;
   }
+  if (path.startsWith('/images/')) {
+    return `${SITE_URL}${path}`;
+  }
   return `${BACKEND_ORIGIN}${path}`;
 }
 
@@ -121,9 +124,26 @@ export function mediaThumb(asset: MediaAsset | null | undefined): string {
       const filename = path.replace('/uploads/', '');
       return `${BACKEND_ORIGIN}/api/media/file/${filename}?thumb=1`;
     }
+    if (path.startsWith('/images/')) {
+      return `${SITE_URL}${path}`;
+    }
     return `${BACKEND_ORIGIN}${path}`;
   }
   return mediaUrl(asset);
+}
+
+/** Resolves any resource image url (e.g. project row.imageUrl), whether absolute, asset-based, or static */
+export function resolveResourceImageUrl(url?: string | null): string {
+  if (!url) return '';
+  if (url.startsWith('http')) return url;
+  if (url.startsWith('/uploads/')) {
+    const filename = url.replace('/uploads/', '');
+    return `${BACKEND_ORIGIN}/api/media/file/${filename}`;
+  }
+  if (url.startsWith('/images/')) {
+    return `${SITE_URL}${url}`;
+  }
+  return `${BACKEND_ORIGIN}${url.startsWith('/') ? url : `/${url}`}`;
 }
 
 /**

@@ -2,7 +2,7 @@ import { ImageOff, SquareStack, Star } from 'lucide-react';
 import { useState } from 'react';
 import { ResourcePage } from '@/features/content/ResourcePage';
 import type { ResourceConfig } from '@/features/content/types';
-import { mediaThumb } from '@/features/media/useMedia';
+import { mediaThumb, resolveResourceImageUrl } from '@/features/media/useMedia';
 import { truncate } from '@/lib/format';
 import type { Project } from '@/types';
 
@@ -45,7 +45,7 @@ const config: ResourceConfig<Project> = {
   emptyHint:
     'Add a handover photo, a short write-up and the category it belongs to. Portrait photos (4:5) crop best.',
   thumbnail: (row) => {
-    const src = row.image ? mediaThumb(row.image) : (row.imageUrl ?? '');
+    const src = row.image ? mediaThumb(row.image) : resolveResourceImageUrl(row.imageUrl);
     return <ProjectThumbnail src={src} isFeatured={row.isFeatured} />;
   },
   primary: (row) => row.title,

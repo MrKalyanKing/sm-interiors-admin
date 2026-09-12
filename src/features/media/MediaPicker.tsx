@@ -8,7 +8,7 @@ import { Modal } from '@/components/ui/Modal';
 import { cn } from '@/lib/cn';
 import { formatBytes } from '@/lib/format';
 import type { MediaAsset } from '@/types';
-import { mediaThumb, mediaUrl, useMediaAsset, useMediaList, useMediaMutations } from './useMedia';
+import { mediaThumb, mediaUrl, resolveResourceImageUrl, useMediaAsset, useMediaList, useMediaMutations } from './useMedia';
 
 interface MediaPickerProps {
   value?: string | null;
@@ -44,7 +44,7 @@ export function MediaPicker({
   const { data: fetched } = useMediaAsset(value, Boolean(value) && !inList);
   const selected = inList ?? fetched ?? null;
 
-  const previewUrl = selected ? mediaThumb(selected) : (fallbackUrl ?? '');
+  const previewUrl = selected ? mediaThumb(selected) : resolveResourceImageUrl(fallbackUrl);
   const [imgError, setImgError] = useState(false);
 
   useEffect(() => {

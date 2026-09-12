@@ -13,6 +13,9 @@ export const API_URL = normalizeApiUrl(RAW_API_URL);
 /** Base origin of the backend without the /api prefix, for media and static assets. */
 export const BACKEND_ORIGIN = API_URL.replace(/\/api\/?$/, '');
 
+/** Public site URL for resolving public website assets. */
+export const SITE_URL = (import.meta.env.VITE_SITE_URL || 'https://sminteriors47.in').replace(/\/+$/, '');
+
 const ACCESS_KEY = 'sm_access_token';
 const REFRESH_KEY = 'sm_refresh_token';
 
