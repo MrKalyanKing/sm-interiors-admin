@@ -1,4 +1,4 @@
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, ChevronDown } from 'lucide-react';
 import {
   forwardRef,
   InputHTMLAttributes,
@@ -137,29 +137,34 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
   const id = useId();
   return (
     <FieldShell label={label} hint={hint} error={error} required={required} htmlFor={id}>
-      <select
-        id={id}
-        ref={ref}
-        aria-invalid={Boolean(error)}
-        className={cn(
-          control,
-          'appearance-none bg-[length:14px] bg-[right:0.9rem_center] bg-no-repeat pr-9',
-          error ? 'border-danger/60' : 'border-white/10',
-          className,
-        )}
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239DB4C9' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")",
-        }}
-        {...props}
-      >
-        {placeholder && <option value="">{placeholder}</option>}
-        {options.map((option) => (
-          <option key={option.value} value={option.value} className="bg-night-raised">
-            {option.label}
-          </option>
-        ))}
-      </select>
+      <div className="relative">
+        <select
+          id={id}
+          ref={ref}
+          aria-invalid={Boolean(error)}
+          className={cn(
+            control,
+            'appearance-none pr-10 cursor-pointer text-frost bg-night-raised/80 hover:bg-night-raised border-white/10 hover:border-white/20 focus:border-azure/60 focus:ring-2 focus:ring-azure/25 [&>option]:bg-[#111928] [&>option]:text-frost [&>option]:py-2',
+            error ? 'border-danger/60' : 'border-white/10',
+            className,
+          )}
+          {...props}
+        >
+          {placeholder && (
+            <option value="" className="bg-[#111928] text-frost-dim">
+              {placeholder}
+            </option>
+          )}
+          {options.map((option) => (
+            <option key={option.value} value={option.value} className="bg-[#111928] text-frost">
+              {option.label}
+            </option>
+          ))}
+        </select>
+        <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-frost-muted">
+          <ChevronDown className="h-4 w-4" />
+        </div>
+      </div>
     </FieldShell>
   );
 });

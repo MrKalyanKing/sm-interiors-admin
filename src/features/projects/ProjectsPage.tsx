@@ -68,6 +68,7 @@ const config: ResourceConfig<Project> = {
       half: true,
       defaultValue: 'Bhimavaram',
       placeholder: 'Sri Rama Puram, Bhimavaram',
+      hint: 'Town or neighborhood of the project.',
     },
     {
       name: 'imageId',

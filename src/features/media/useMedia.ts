@@ -105,6 +105,10 @@ export function mediaUrl(asset: Pick<MediaAsset, 'url' | 'path'> | null | undefi
   if (asset.url) return asset.url;
   if (!asset.path) return '';
   const path = asset.path.startsWith('/') ? asset.path : `/${asset.path}`;
+  if (path.startsWith('/uploads/')) {
+    const filename = path.replace('/uploads/', '');
+    return `${BACKEND_ORIGIN}/api/media/file/${filename}`;
+  }
   return `${BACKEND_ORIGIN}${path}`;
 }
 
@@ -113,6 +117,10 @@ export function mediaThumb(asset: MediaAsset | null | undefined): string {
   if (asset.thumbnailUrl) return asset.thumbnailUrl;
   if (asset.thumbnailPath) {
     const path = asset.thumbnailPath.startsWith('/') ? asset.thumbnailPath : `/${asset.thumbnailPath}`;
+    if (path.startsWith('/uploads/')) {
+      const filename = path.replace('/uploads/', '');
+      return `${BACKEND_ORIGIN}/api/media/file/${filename}?thumb=1`;
+    }
     return `${BACKEND_ORIGIN}${path}`;
   }
   return mediaUrl(asset);

@@ -100,7 +100,7 @@ export function MediaPicker({
             </Button>
             <Button
               type="button"
-              variant="ghost"
+              variant="secondary"
               size="sm"
               loading={uploading}
               onClick={() => fileInput.current?.click()}
