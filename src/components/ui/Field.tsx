@@ -174,9 +174,11 @@ interface ToggleProps {
 
 export function Toggle({ checked, onChange, label, hint, disabled }: ToggleProps) {
   return (
-    <label
+    <div
+      role="group"
+      onClick={() => !disabled && onChange(!checked)}
       className={cn(
-        'flex cursor-pointer items-start gap-3',
+        'group flex cursor-pointer items-start gap-3 select-none',
         disabled && 'cursor-not-allowed opacity-60',
       )}
     >
@@ -185,25 +187,38 @@ export function Toggle({ checked, onChange, label, hint, disabled }: ToggleProps
         role="switch"
         aria-checked={checked}
         disabled={disabled}
-        onClick={() => onChange(!checked)}
+        onClick={(e) => {
+          e.stopPropagation();
+          onChange(!checked);
+        }}
         className={cn(
-          'relative mt-0.5 h-6 w-11 shrink-0 rounded-full transition-colors duration-200',
+          'relative mt-0.5 inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-azure/40 focus:ring-offset-2 focus:ring-offset-night',
           checked ? 'bg-azure' : 'bg-white/15',
+          disabled && 'cursor-not-allowed',
         )}
       >
         <span
           className={cn(
-            'absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200',
-            checked ? 'translate-x-[1.375rem]' : 'translate-x-0.5',
+            'pointer-events-none absolute top-0.5 left-0.5 inline-block h-5 w-5 rounded-full bg-white shadow-md transition-transform duration-200 ease-in-out',
+            checked ? 'translate-x-5' : 'translate-x-0',
           )}
         />
       </button>
       {(label || hint) && (
-        <span className="select-none">
-          {label && <span className="block text-sm text-frost">{label}</span>}
-          {hint && <span className="mt-0.5 block text-xs text-frost-dim">{hint}</span>}
+        <span className="min-w-0 flex-1">
+          {label && (
+            <span className="block text-sm text-frost transition-colors group-hover:text-white break-words">
+              {label}
+            </span>
+          )}
+          {hint && (
+            <span className="mt-0.5 block text-xs leading-relaxed text-frost-dim break-words">
+              {hint}
+            </span>
+          )}
         </span>
       )}
-    </label>
+    </div>
   );
 }
+

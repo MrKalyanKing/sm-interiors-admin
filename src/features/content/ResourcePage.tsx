@@ -16,10 +16,10 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Eye, EyeOff, GripVertical, Pencil, Plus, Search, Trash2 } from 'lucide-react';
+import { CheckCircle, Eye, EyeOff, GripVertical, Pencil, Plus, Search, Share2, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { PublishBadge } from '@/components/ui/Badge';
+import { Badge, PublishBadge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Field';
@@ -29,7 +29,9 @@ import { useDebounced } from '@/hooks/useDebounced';
 import { getErrorMessage, getFieldErrors } from '@/lib/api';
 import { cn } from '@/lib/cn';
 import type { ContentBase } from '@/types';
+import { ReviewShareModal } from '@/features/testimonials/ReviewShareModal';
 import { ResourceForm, useFormState, validateValues } from './ResourceForm';
+
 import type { ResourceConfig } from './types';
 import { useResourceList, useResourceMutations } from './useResource';
 
@@ -50,6 +52,7 @@ export function ResourcePage<T extends ContentBase>({ config }: ResourcePageProp
   const [editing, setEditing] = useState<T | null>(null);
   const [creating, setCreating] = useState(false);
   const [deleting, setDeleting] = useState<T | null>(null);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
 
   // Local copy so a drag reorders instantly instead of waiting on the server.
   const [rows, setRows] = useState<T[]>([]);
@@ -84,9 +87,20 @@ export function ResourcePage<T extends ContentBase>({ config }: ResourcePageProp
         title={config.title}
         description={config.description}
         action={
-          <Button onClick={() => setCreating(true)} icon={<Plus className="h-4 w-4" />}>
-            Add {config.singular.toLowerCase()}
-          </Button>
+          <div className="flex items-center gap-2">
+            {config.path === 'testimonials' && (
+              <Button
+                variant="secondary"
+                onClick={() => setShareModalOpen(true)}
+                icon={<Share2 className="h-4 w-4 text-azure-light" />}
+              >
+                Share Review Link
+              </Button>
+            )}
+            <Button onClick={() => setCreating(true)} icon={<Plus className="h-4 w-4" />}>
+              Add {config.singular.toLowerCase()}
+            </Button>
+          </div>
         }
       />
 
@@ -202,6 +216,13 @@ export function ResourcePage<T extends ContentBase>({ config }: ResourcePageProp
           setDeleting(null);
         }}
       />
+
+      {config.path === 'testimonials' && (
+        <ReviewShareModal
+          open={shareModalOpen}
+          onClose={() => setShareModalOpen(false)}
+        />
+      )}
     </div>
   );
 }
@@ -230,6 +251,8 @@ function SortableRow<T extends ContentBase>({
     disabled: !canReorder,
   });
 
+  const isCustomerSubmission = (row as Record<string, unknown>).source === 'customer_submission';
+
   return (
     <li
       ref={setNodeRef}
@@ -237,7 +260,7 @@ function SortableRow<T extends ContentBase>({
       className={cn(
         'flex items-center gap-3 px-4 py-3 transition-colors',
         isDragging ? 'relative z-10 bg-night-raised shadow-glass-lg' : 'hover:bg-white/[0.03]',
-        !row.isPublished && 'opacity-70',
+        !row.isPublished && 'opacity-75',
       )}
     >
       {canReorder && (
@@ -257,6 +280,13 @@ function SortableRow<T extends ContentBase>({
         <div className="flex flex-wrap items-center gap-2">
           <span className="truncate text-sm font-medium text-frost">{config.primary(row)}</span>
           <PublishBadge published={row.isPublished} />
+          {isCustomerSubmission && (
+            !row.isPublished ? (
+              <Badge tone="warning">Pending Review</Badge>
+            ) : (
+              <Badge tone="azure">Customer Review</Badge>
+            )
+          )}
         </div>
         {config.secondary && (
           <div className="mt-0.5 truncate text-xs text-frost-dim">{config.secondary(row)}</div>
@@ -264,6 +294,18 @@ function SortableRow<T extends ContentBase>({
       </div>
 
       <div className="flex shrink-0 items-center gap-1">
+        {isCustomerSubmission && !row.isPublished && (
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={onTogglePublish}
+            title="Approve and show on website"
+            className="text-xs text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/10 mr-1"
+            icon={<CheckCircle className="h-3.5 w-3.5 text-emerald-400" />}
+          >
+            Approve
+          </Button>
+        )}
         <Button
           variant="ghost"
           size="icon"

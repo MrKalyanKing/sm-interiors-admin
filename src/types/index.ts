@@ -112,7 +112,20 @@ export interface Testimonial extends ContentBase {
   name: string;
   detail: string;
   rating: number;
+  source?: string;
+  token?: string | null;
 }
+
+export interface ReviewInvite {
+  id: string;
+  token: string;
+  clientName?: string | null;
+  projectDetail?: string | null;
+  isUsed: boolean;
+  usedAt?: string | null;
+  createdAt: string;
+}
+
 
 export interface Faq extends ContentBase {
   question: string;
